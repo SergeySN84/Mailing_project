@@ -1,14 +1,15 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
-from .models import Mailing, Client, Message, MailingAttempt
-from .forms import MailingForm, ClientForm, MessageForm
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import cache_page
+from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.cache import cache_page
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
+
+from .forms import ClientForm, MailingForm, MessageForm
+from .models import Client, Mailing, MailingAttempt, Message
 
 
 class MailingListView(LoginRequiredMixin, ListView):
@@ -55,7 +56,10 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if obj.owner != self.request.user and not self.request.user.groups.filter(name="Менеджеры").exists():
+        if (
+            obj.owner != self.request.user
+            and not self.request.user.groups.filter(name="Менеджеры").exists()
+        ):
             raise PermissionDenied("Вы не можете редактировать чужую рассылку.")
         return obj
 
@@ -107,7 +111,10 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if obj.owner != self.request.user and not self.request.user.groups.filter(name="Менеджеры").exists():
+        if (
+            obj.owner != self.request.user
+            and not self.request.user.groups.filter(name="Менеджеры").exists()
+        ):
             raise PermissionDenied("Вы не можете редактировать чужого клиента.")
         return obj
 
@@ -154,7 +161,10 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if obj.owner != self.request.user and not self.request.user.groups.filter(name="Менеджеры").exists():
+        if (
+            obj.owner != self.request.user
+            and not self.request.user.groups.filter(name="Менеджеры").exists()
+        ):
             raise PermissionDenied("Вы не можете редактировать чужое сообщение.")
         return obj
 
@@ -180,7 +190,10 @@ class MailingAttemptListView(LoginRequiredMixin, ListView):
         if user.groups.filter(name="Менеджеры").exists():
             return MailingAttempt.objects.select_related("mailing").all()
         # Только попытки рассылок текущего пользователя
-        return MailingAttempt.objects.filter(mailing__owner=user).select_related("mailing")
+        return MailingAttempt.objects.filter(mailing__owner=user).select_related(
+            "mailing"
+        )
+
 
 @cache_page(60 * 5)  # кеширование на 5 минут
 @login_required
@@ -192,8 +205,12 @@ def home(request):
     ).count()
     unique_clients = Client.objects.count()
 
-    return render(request, 'home.html', {
-        'total_mailings': total_mailings,
-        'active_mailings': active_mailings,
-        'unique_clients': unique_clients,
-    })
+    return render(
+        request,
+        "home.html",
+        {
+            "total_mailings": total_mailings,
+            "active_mailings": active_mailings,
+            "unique_clients": unique_clients,
+        },
+    )

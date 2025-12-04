@@ -1,0 +1,21 @@
+[flake8]
+
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    .poetry,
+    node_modules,
+    */migrations/*,
+    */settings.py
+
+max-line-length = 88
+
+
+extend-ignore = E203,W503
+
+select = C,E,F,W,B,BLK
+
+show-source = true
+statistics = true
