@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load user_extras %}
+
+{% block content %}
+<h2>Получатели</h2>
+
+<a href="{% url 'mailings:client_create' %}" class="btn">Добавить получателя</a>
+
+{% if object_list %}
+  <ul>
+    {% for client in object_list %}
+      <li>
+        <strong>{{ client.full_name }}</strong> — {{ client.email }}
+        {% if client.comment %}<br><em>{{ client.comment }}</em>{% endif %}
+        <br>
+        {% if user == client.owner or user|is_manager %}
+          <a href="{% url 'mailings:client_update' client.pk %}">Изменить</a>
+          {% if user == client.owner %}
+            <a href="{% url 'mailings:client_delete' client.pk %}" class="btn btn-danger">Удалить</a>
+          {% endif %}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Нет добавленных получателей.</p>
+{% endif %}
+
+{% endblock %}

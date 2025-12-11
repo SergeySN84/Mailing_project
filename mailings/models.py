@@ -1,7 +1,5 @@
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils import timezone
+from django.conf import settings
 
 User = settings.AUTH_USER_MODEL
 
@@ -18,7 +16,9 @@ class Client(models.Model):
     class Meta:
         verbose_name = "Получатель"
         verbose_name_plural = "Получатели"
-        permissions = [("view_all_clients", "Может просматривать всех получателей")]
+        permissions = [
+            ("view_all_clients", "Может просматривать всех получателей"),
+        ]
 
 
 class Message(models.Model):
@@ -32,28 +32,20 @@ class Message(models.Model):
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
-        permissions = [("view_all_messages", "Может просматривать все сообщения")]
+        permissions = [
+            ("view_all_messages", "Может просматривать все сообщения"),
+        ]
 
 
 class Mailing(models.Model):
     start_time = models.DateTimeField(verbose_name="Начало отправки")
     end_time = models.DateTimeField(verbose_name="Окончание отправки")
-    message = models.ForeignKey(
-        Message, on_delete=models.CASCADE, verbose_name="Сообщение"
-    )
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name="Сообщение")
     clients = models.ManyToManyField(Client, verbose_name="Получатели")
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Владелец")
 
-    def clean(self):
-        if self.start_time and self.end_time:
-            if self.start_time >= self.end_time:
-                raise ValidationError(
-                    "Время начала должно быть раньше времени окончания."
-                )
-            if self.start_time < timezone.now():
-                raise ValidationError("Время начала не может быть в прошлом.")
-
     def get_status(self):
+        from django.utils import timezone
         now = timezone.now()
         if now < self.start_time:
             return "Создана"
@@ -76,13 +68,9 @@ class Mailing(models.Model):
 
 class MailingAttempt(models.Model):
     attempt_time = models.DateTimeField(auto_now_add=True, verbose_name="Время попытки")
-    status = models.CharField(
-        max_length=20, choices=[("Успешно", "Успешно"), ("Не успешно", "Не успешно")]
-    )
+    status = models.CharField(max_length=20, choices=[("Успешно", "Успешно"), ("Не успешно", "Не успешно")])
     server_response = models.TextField(blank=True, verbose_name="Ответ сервера")
-    mailing = models.ForeignKey(
-        Mailing, on_delete=models.CASCADE, verbose_name="Рассылка"
-    )
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка")
 
     def __str__(self):
         return f"Попытка {self.attempt_time} — {self.status}"

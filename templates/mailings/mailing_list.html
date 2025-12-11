@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load user_extras %}
+
+{% block content %}
+<h2>Рассылки</h2>
+
+<a href="{% url 'mailings:mailing_create' %}" class="btn">Создать рассылку</a>
+
+{% if object_list %}
+  <ul>
+    {% for mailing in object_list %}
+      <li>
+        <strong>ID:</strong> {{ mailing.id }} |
+        <strong>Статус:</strong> {{ mailing.get_status }} |
+        <strong>Период:</strong> 
+        {{ mailing.start_time|date:"d.m.Y H:i" }} — {{ mailing.end_time|date:"d.m.Y H:i" }}<br>
+        <strong>Сообщение:</strong> "{{ mailing.message.subject }}"
+        <br>
+        {% if user == mailing.owner or user|is_manager %}
+          <a href="{% url 'mailings:mailing_update' mailing.pk %}">Изменить</a>
+          {% if user == mailing.owner %}
+            <a href="{% url 'mailings:mailing_delete' mailing.pk %}" class="btn btn-danger">Удалить</a>
+          {% endif %}
+          {% if mailing.get_status == "Запущена" and user == mailing.owner %}
+          <a href="{% url 'mailings:send_mailing' mailing.pk %}" class="btn">Отправить сейчас</a>
+          {% endif %}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>У вас пока нет созданных рассылок.</p>
+{% endif %}
+
+{% endblock %}

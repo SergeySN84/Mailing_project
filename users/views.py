@@ -1,4 +1,3 @@
-# users/views.py
 import secrets
 from datetime import timedelta
 
@@ -88,6 +87,8 @@ class CustomLoginView(LoginView):
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy("users:login")
+    template_name = "users/login.html"
+    http_method_names = ["get", "post", "options"]
 
 
 class ProfileView(UpdateView):
