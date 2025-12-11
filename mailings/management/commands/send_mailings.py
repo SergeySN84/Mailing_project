@@ -1,18 +1,17 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.core.mail import send_mail
-from django.conf import settings
+
 from mailings.models import Mailing, MailingAttempt
+
 
 class Command(BaseCommand):
     help = "Отправка активных рассылок в указанный период"
 
     def handle(self, *args, **options):
         now = timezone.now()
-        mailings = Mailing.objects.filter(
-            start_time__lte=now,
-            end_time__gte=now
-        )
+        mailings = Mailing.objects.filter(start_time__lte=now, end_time__gte=now)
 
         if not mailings:
             self.stdout.write("Нет активных рассылок для отправки.")

@@ -1,7 +1,9 @@
-from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from mailings.models import Mailing, Client, Message
+from django.core.management.base import BaseCommand
+
+from mailings.models import Client, Mailing, Message
+
 
 class Command(BaseCommand):
     help = "Создаёт группу 'Менеджеры' с необходимыми правами"
