@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load user_extras %}
+
+{% block content %}
+<h2>Сообщения</h2>
+
+<a href="{% url 'mailings:message_create' %}" class="btn">Создать сообщение</a>
+
+{% if object_list %}
+  <ul>
+    {% for message in object_list %}
+      <li>
+        <strong>{{ message.subject }}</strong><br>
+        <pre>{{ message.body|truncatechars:120 }}</pre>
+        <br>
+        {% if user == message.owner or user|is_manager %}
+          <a href="{% url 'mailings:message_update' message.pk %}">Изменить</a>
+          {% if user == message.owner %}
+            <a href="{% url 'mailings:message_delete' message.pk %}" class="btn btn-danger">Удалить</a>
+          {% endif %}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Нет созданных сообщений.</p>
+{% endif %}
+
+{% endblock %}

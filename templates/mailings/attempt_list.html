@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Попытки рассылок</h2>
+
+{% if object_list %}
+  <div style="font-family: monospace;">
+    {% for attempt in object_list %}
+      <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+          <strong>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</strong><br>
+          Рассылка ID: <a href="{% url 'mailings:mailing_detail' attempt.mailing.pk %}">{{ attempt.mailing.id }}</a><br>
+          Статус: <span style="{% if attempt.status == 'Успешно' %}color: green;{% else %}color: red;{% endif %}">{{ attempt.status }}</span>
+          {% if attempt.server_response %}
+          <br>
+          <small>Ответ сервера: <code>{{ attempt.server_response|truncatechars:200 }}</code></small>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>Нет попыток отправки.</p>
+{% endif %}
+
+{% endblock %}

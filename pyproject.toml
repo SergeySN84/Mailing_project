@@ -1,28 +1,26 @@
-[project]
+[tool.poetry]
 name = "mailing-project"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Your Name",email = "you@example.com"}
-]
+description = "Сервис управления email-рассылками"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "django (>=5.2.9,<6.0.0)",
-    "python-dotenv (>=1.2.1,<2.0.0)",
-    "pillow (>=12.0.0,<13.0.0)",
-    "django-phonenumber-field[phonenumbers] (>=8.4.0,<9.0.0)",
-    "psycopg2-binary (>=2.9.11,<3.0.0)",
-    "redis (>=7.1.0,<8.0.0)"
-]
+package-mode = false
 
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.dependencies]
+python = ">=3.12"
+django = ">=6.0a1,<7.0"
+python-dotenv = ">=1.2.1,<2.0.0"
+django-phonenumber-field = {version = ">=8.4.0,<9.0.0", extras = ["phonenumbers"]}
+psycopg = ">=3.2.0,<4.0.0"
+redis = ">=7.1.0,<8.0.0"
+pillow = "^12.0.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.3.0"
 black = "^25.11.0"
 isort = "^7.0.0"
 
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
